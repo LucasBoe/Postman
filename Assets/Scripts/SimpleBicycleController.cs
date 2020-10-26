@@ -26,25 +26,48 @@ public class SimpleBicycleController : MonoBehaviour
     {
         if (myRigidbody != null)
         {
+            UpdateSpeedAndRotation2();
+
             float vel = myRigidbody.velocity.magnitude;
-            myRigidbody.velocity = vel * GetSteeringVector(addOwnRotation: true);
-
             steeringAmount += Input.GetAxis("Horizontal") * Time.deltaTime * steeringSpeed;
-            poleFront.localRotation = Quaternion.Euler(0, steeringAmount, 0);
-
-            myRigidbody.AddForce(GetSteeringVector() * Time.deltaTime * Input.GetAxis("Vertical") * speed * GetAccelorationFactor());
-
-            float rotation = transform.rotation.eulerAngles.y + steeringAmount * Time.deltaTime;
-            transform.rotation = Quaternion.Euler(0, rotation, steeringAmount * 0.1f);
             steeringAmount /= (1 + Time.deltaTime);
 
+            poleFront.localRotation = Quaternion.Euler(0, steeringAmount, 0);
             spineForward.localPosition = Vector3.up * 2 + Vector3.back * vel * leanAmount;
 
             if (myAnimator != null)
                 myAnimator.speed = animationSpeedMultiplier * vel;
         }
     }
-    private Vector3 GetSteeringVector (bool addOwnRotation = false)
+
+    private void UpdateSpeedAndRotation()
+    {
+        float vel = myRigidbody.velocity.magnitude;
+        myRigidbody.velocity = vel * GetSteeringVector(addOwnRotation: true);
+
+        myRigidbody.AddForce(GetSteeringVector() * Time.deltaTime * Input.GetAxis("Vertical") * speed * GetAccelorationFactor());
+
+        float rotation = transform.rotation.eulerAngles.y + steeringAmount * Time.deltaTime;
+        transform.rotation = Quaternion.Euler(0, rotation, steeringAmount * 0.1f);
+    }
+
+    private void UpdateSpeedAndRotation2()
+    {
+        float vel = myRigidbody.velocity.magnitude;
+        float input = Input.GetAxis("Vertical");
+        myRigidbody.AddForce(GetSteeringVector() * Time.deltaTime * input * speed * GetAccelorationFactor());
+
+        //myRigidbody.velocity = vel * GetSteeringVector(addOwnRotation: true);
+        //float rotation = transform.rotation.eulerAngles.y + steeringAmount * Time.deltaTime;
+        //transform.rotation = Quaternion.Euler(0, rotation, steeringAmount * 0.1f);
+
+        Vector3 forward = new Vector3(-myRigidbody.velocity.x, 0, -myRigidbody.velocity.z);
+
+  
+            transform.forward = Vector3.Lerp(transform.forward, forward, vel*Time.deltaTime);
+    }
+
+    private Vector3 GetSteeringVector(bool addOwnRotation = false)
     {
         if (poleFront != null)
         {
@@ -64,7 +87,7 @@ public class SimpleBicycleController : MonoBehaviour
         return Vector3.forward;
     }
 
-    private float GetAccelorationFactor ()
+    private float GetAccelorationFactor()
     {
         if (myRigidbody != null && acceleration != null)
         {
@@ -85,11 +108,11 @@ public class SimpleBicycleController : MonoBehaviour
             str += "pos: " + positionOnCurve + " acel: " + acceleration.Evaluate(myRigidbody.velocity.magnitude / maxSpeed);
         }
 
-        GUI.TextArea(new Rect(10,10,100,100),str);
+        GUI.TextArea(new Rect(10, 10, 100, 100), str);
     }
 
     private void OnDrawGizmos()
     {
-        Gizmos.DrawWireSphere(transform.position + GetSteeringVector(),0.1f);
+        Gizmos.DrawWireSphere(transform.position + GetSteeringVector(), 0.1f);
     }
 }

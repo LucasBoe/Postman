@@ -14,7 +14,7 @@ public class SimpleCameraFollow : MonoBehaviour
     void FixedUpdate()
     {
         // Define a target position above and behind the target transform
-        Vector3 targetPosition = target.position + target.forward * 3 + Vector3.up * 2.5f;
+        Vector3 targetPosition = target.position - target.forward * 3 + Vector3.up * 2.5f;
 
         // Smoothly move the camera towards that target position
         if (smooth)
