@@ -10,6 +10,9 @@ public class SimpleBicycleController : MonoBehaviour
     public Transform poleFront;
     public Rigidbody myRigidbody;
 
+    public Transform spineForward;
+    public float leanAmount = 0.8f;
+
     public float speed;
     public float steeringSpeed;
     public float maxSpeed;
@@ -21,7 +24,8 @@ public class SimpleBicycleController : MonoBehaviour
     {
         if (myRigidbody != null)
         {
-            myRigidbody.velocity = myRigidbody.velocity.magnitude * GetSteeringVector(addOwnRotation: true);
+            float vel = myRigidbody.velocity.magnitude;
+            myRigidbody.velocity = vel * GetSteeringVector(addOwnRotation: true);
 
             steeringAmount += Input.GetAxis("Horizontal") * Time.deltaTime * steeringSpeed;
             poleFront.localRotation = Quaternion.Euler(0, steeringAmount, 0);
@@ -31,6 +35,8 @@ public class SimpleBicycleController : MonoBehaviour
             float rotation = transform.rotation.eulerAngles.y + steeringAmount * Time.deltaTime;
             transform.rotation = Quaternion.Euler(0, rotation, steeringAmount * 0.1f);
             steeringAmount /= (1 + Time.deltaTime);
+
+            spineForward.localPosition = Vector3.up * 2 + Vector3.back * vel * leanAmount;
         }
     }
     private Vector3 GetSteeringVector (bool addOwnRotation = false)
