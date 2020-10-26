@@ -9,14 +9,16 @@ public class SimpleBicycleController : MonoBehaviour
 {
     public Transform poleFront;
     public Rigidbody myRigidbody;
+    public Animator myAnimator;
 
     public Transform spineForward;
     public float leanAmount = 0.8f;
+    public float animationSpeedMultiplier = 0.25f;
 
     public float speed;
     public float steeringSpeed;
     public float maxSpeed;
-    public AnimationCurve curve;
+    public AnimationCurve acceleration;
 
     float steeringAmount = 0;
 
@@ -37,6 +39,9 @@ public class SimpleBicycleController : MonoBehaviour
             steeringAmount /= (1 + Time.deltaTime);
 
             spineForward.localPosition = Vector3.up * 2 + Vector3.back * vel * leanAmount;
+
+            if (myAnimator != null)
+                myAnimator.speed = animationSpeedMultiplier * vel;
         }
     }
     private Vector3 GetSteeringVector (bool addOwnRotation = false)
@@ -61,9 +66,9 @@ public class SimpleBicycleController : MonoBehaviour
 
     private float GetAccelorationFactor ()
     {
-        if (myRigidbody != null && curve != null)
+        if (myRigidbody != null && acceleration != null)
         {
-            return curve.Evaluate(myRigidbody.velocity.magnitude / maxSpeed);
+            return acceleration.Evaluate(myRigidbody.velocity.magnitude / maxSpeed);
         }
 
         return 1;
@@ -74,10 +79,10 @@ public class SimpleBicycleController : MonoBehaviour
         string str = "";
         str += myRigidbody.velocity.magnitude.ToString() + "\n";
 
-        if (myRigidbody != null && curve != null)
+        if (myRigidbody != null && acceleration != null)
         {
             float positionOnCurve = myRigidbody.velocity.magnitude / maxSpeed;
-            str += "pos: " + positionOnCurve + " acel: " + curve.Evaluate(myRigidbody.velocity.magnitude / maxSpeed);
+            str += "pos: " + positionOnCurve + " acel: " + acceleration.Evaluate(myRigidbody.velocity.magnitude / maxSpeed);
         }
 
         GUI.TextArea(new Rect(10,10,100,100),str);
