@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using NaughtyAttributes;
+
 
 [System.Serializable]
 public class AxleInfo
@@ -22,7 +24,11 @@ public class NewBikeController : MonoBehaviour
     [SerializeField] Animator animator;
     [SerializeField] float animationSpeedMultiplier = 0.25f;
 
+    [NaughtyAttributes.OnValueChanged("OnStabilityChanged")]
+    [Range(0, 0.4f)][SerializeField] float stability = 0.15f;
+
     new Rigidbody rigidbody;
+
     private void Start()
     {
         rigidbody = GetComponent<Rigidbody>();
@@ -67,6 +73,17 @@ public class NewBikeController : MonoBehaviour
                 axleInfo.leftWheel.motorTorque = motor;
                 axleInfo.rightWheel.motorTorque = motor;
             }
+        }
+    }
+
+    private void OnStabilityChanged()
+    {
+        foreach (var axle in axleInfos)
+        {
+            Vector3 pos = axle.leftWheel.transform.localPosition;
+
+            axle.leftWheel.transform.localPosition = new Vector3(-stability, pos.y, pos.z);
+            axle.rightWheel.transform.localPosition = new Vector3(stability, pos.y, pos.z);
         }
     }
 }

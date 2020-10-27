@@ -200,7 +200,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6185099877961030300}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.25, y: 0, z: -0.45800018}
+  m_LocalPosition: {x: 0.151, y: 0, z: -0.458}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 6185099877923920610}
@@ -381,7 +381,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6185099878349216019}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.25, y: 0, z: 0.51500005}
+  m_LocalPosition: {x: 0.151, y: 0, z: 0.515}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 6185099877923920610}
@@ -442,7 +442,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6185099878387330234}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.25, y: 0, z: -0.458}
+  m_LocalPosition: {x: -0.151, y: 0, z: -0.458}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 6185099877923920610}
@@ -617,7 +617,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6185099878780027651}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.25, y: 0, z: 0.515}
+  m_LocalPosition: {x: -0.151, y: 0, z: 0.515}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 6185099877923920610}
@@ -741,13 +741,14 @@ MonoBehaviour:
     rightWheel: {fileID: 6185099877961030302}
     motor: 1
     steering: 0
-  maxMotorTorque: 300
+  maxMotorTorque: 200
   maxSteeringAngle: 30
   visualBackWheel: {fileID: 7907707677395143115}
   visualFrontWheel: {fileID: 7907707677500401609}
   poleFront: {fileID: 7907707676172861559}
   animator: {fileID: 7907707677975858905}
   animationSpeedMultiplier: 0.25
+  stability: 0.151
 --- !u!54 &6185099879248055864
 Rigidbody:
   m_ObjectHideFlags: 0
