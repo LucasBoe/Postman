@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using NaughtyAttributes;
-
+using UnityEngine.Animations.Rigging;
 
 [System.Serializable]
 public class AxleInfo
@@ -16,16 +16,21 @@ public class AxleInfo
 public class NewBikeController : MonoBehaviour
 {
     [SerializeField] List<AxleInfo> axleInfos;
-    [SerializeField] float maxMotorTorque;
-    [SerializeField] float maxSteeringAngle;
 
     [SerializeField] Transform visualBackWheel, visualFrontWheel, poleFront;
 
     [SerializeField] Animator animator;
+
+    [Header("Settings")]
+    [SerializeField] float maxMotorTorque;
+    [SerializeField] float maxSteeringAngle;
     [SerializeField] float animationSpeedMultiplier = 0.25f;
 
     [NaughtyAttributes.OnValueChanged("OnStabilityChanged")]
-    [Range(0, 0.4f)][SerializeField] float stability = 0.15f;
+    [Range(0, 0.4f)] [SerializeField] float wheelWidth = 0.15f;
+
+    [NaughtyAttributes.OnValueChanged("OnCenterOfMassOffsetChanged")]
+    [SerializeField] Vector3 centerOfMassOffset;
 
     new Rigidbody rigidbody;
 
@@ -82,8 +87,17 @@ public class NewBikeController : MonoBehaviour
         {
             Vector3 pos = axle.leftWheel.transform.localPosition;
 
-            axle.leftWheel.transform.localPosition = new Vector3(-stability, pos.y, pos.z);
-            axle.rightWheel.transform.localPosition = new Vector3(stability, pos.y, pos.z);
+            axle.leftWheel.transform.localPosition = new Vector3(-wheelWidth, pos.y, pos.z);
+            axle.rightWheel.transform.localPosition = new Vector3(wheelWidth, pos.y, pos.z);
         }
+    }
+
+    private void OnCenterOfMassOffsetChanged()
+    {
+        if (rigidbody == null)
+            rigidbody = GetComponent<Rigidbody>();
+
+        rigidbody.ResetCenterOfMass();
+        rigidbody.centerOfMass += centerOfMassOffset;
     }
 }

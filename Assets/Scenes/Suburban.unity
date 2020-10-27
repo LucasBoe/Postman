@@ -79773,11 +79773,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 4667780278704948, guid: 29272a53fba5e4d57ae09c060882d015, type: 3}
   m_PrefabInstance: {fileID: 2144189724}
   m_PrefabAsset: {fileID: 0}
---- !u!95 &4064553285691388092 stripped
-Animator:
-  m_CorrespondingSourceObject: {fileID: 7907707677975858905, guid: 5c81ae89927cf844b8992d33dfa97e2d, type: 3}
-  m_PrefabInstance: {fileID: 6185099878682164837}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &6185099878682164837
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -79785,49 +79780,9 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 6185099877961030303, guid: 5c81ae89927cf844b8992d33dfa97e2d, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0.151
-      objectReference: {fileID: 0}
-    - target: {fileID: 6185099877961030303, guid: 5c81ae89927cf844b8992d33dfa97e2d, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: -0.458
-      objectReference: {fileID: 0}
-    - target: {fileID: 6185099878349216018, guid: 5c81ae89927cf844b8992d33dfa97e2d, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0.151
-      objectReference: {fileID: 0}
-    - target: {fileID: 6185099878349216018, guid: 5c81ae89927cf844b8992d33dfa97e2d, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0.515
-      objectReference: {fileID: 0}
-    - target: {fileID: 6185099878387330181, guid: 5c81ae89927cf844b8992d33dfa97e2d, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -0.151
-      objectReference: {fileID: 0}
-    - target: {fileID: 6185099878780027650, guid: 5c81ae89927cf844b8992d33dfa97e2d, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -0.151
-      objectReference: {fileID: 0}
-    - target: {fileID: 6185099879248055864, guid: 5c81ae89927cf844b8992d33dfa97e2d, type: 3}
-      propertyPath: m_Mass
-      value: 1000
-      objectReference: {fileID: 0}
     - target: {fileID: 6185099879248055868, guid: 5c81ae89927cf844b8992d33dfa97e2d, type: 3}
       propertyPath: m_Name
       value: NewBicycle
-      objectReference: {fileID: 0}
-    - target: {fileID: 6185099879248055870, guid: 5c81ae89927cf844b8992d33dfa97e2d, type: 3}
-      propertyPath: animator
-      value: 
-      objectReference: {fileID: 4064553285691388092}
-    - target: {fileID: 6185099879248055870, guid: 5c81ae89927cf844b8992d33dfa97e2d, type: 3}
-      propertyPath: maxMotorTorque
-      value: 200
-      objectReference: {fileID: 0}
-    - target: {fileID: 6185099879248055870, guid: 5c81ae89927cf844b8992d33dfa97e2d, type: 3}
-      propertyPath: stability
-      value: 0.151
       objectReference: {fileID: 0}
     - target: {fileID: 6185099879248055871, guid: 5c81ae89927cf844b8992d33dfa97e2d, type: 3}
       propertyPath: m_LocalPosition.x
