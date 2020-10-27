@@ -5,25 +5,33 @@ using UnityEngine;
 public class SimpleCameraFollow : MonoBehaviour
 {
     public Transform target;
-    public bool smooth = true;
-    public float smoothAmount = 0.2f;
+
+    public float positionSmoothAmount = 0.2f;
+    public float rotationSmoothAmount = 0.2f;
+
+    public float CameraLookAtUpOffsetMultiplier = 1.5f;
+    public float CameraLookAtForwardOffsetMultiplier = 2;
 
 
-    private Vector3 before;
+    private Vector3 positionBefore;
+    private Vector3 forwardBefore;
 
     void FixedUpdate()
     {
-        // Define a target position above and behind the target transform
-        Vector3 targetPosition = target.position - target.forward * 3 + Vector3.up * 2.5f;
+        //Define a target position
+        Vector3 targetCameraPosition = target.position - target.forward * 3 + Vector3.up * 2.5f;
 
-        // Smoothly move the camera towards that target position
-        if (smooth)
-            transform.position = Vector3.Lerp(before, targetPosition, smoothAmount);
-        else
-            transform.position = targetPosition;
+        //Smoothly move the camera towards that target position
+        transform.position = Vector3.Lerp(positionBefore, targetCameraPosition, positionSmoothAmount);
 
-        transform.forward = (target.position + Vector3.up * 1.5f) - transform.position;
+        //Define a terget look at
+        Vector3 targetCameraLookAt = target.position + Vector3.up * CameraLookAtUpOffsetMultiplier + target.forward * CameraLookAtForwardOffsetMultiplier;
 
-        before = transform.position;
+        //Lerp to the new calculated vector
+        transform.forward = Vector3.Lerp(forwardBefore, (targetCameraLookAt - transform.position), rotationSmoothAmount);
+
+        //store current psotion and rotation by forward vector
+        positionBefore = transform.position;
+        forwardBefore = transform.forward;
     }
 }
