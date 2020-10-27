@@ -26,11 +26,15 @@ public class NewBikeController : MonoBehaviour
     [SerializeField] float maxSteeringAngle;
     [SerializeField] float animationSpeedMultiplier = 0.25f;
 
-    [NaughtyAttributes.OnValueChanged("OnStabilityChanged")]
+    [OnValueChanged("OnStabilityChanged")]
     [Range(0, 0.4f)] [SerializeField] float wheelWidth = 0.15f;
 
-    [NaughtyAttributes.OnValueChanged("OnCenterOfMassOffsetChanged")]
+    [OnValueChanged("OnCenterOfMassOffsetChanged")]
     [SerializeField] Vector3 centerOfMassOffset;
+
+    [Tooltip("0 = ground, 2xradius = top. Should be around center of mass.")]
+    [OnValueChanged("OnWheelsApplyForceHeightChanged")]
+    [SerializeField] float wheelsApplyForceHeight = 0.45f;
 
     new Rigidbody rigidbody;
 
@@ -99,5 +103,16 @@ public class NewBikeController : MonoBehaviour
 
         rigidbody.ResetCenterOfMass();
         rigidbody.centerOfMass += centerOfMassOffset;
+    }
+
+    private void OnWheelsApplyForceHeightChanged()
+    {
+        foreach (var axle in axleInfos)
+        {
+            Vector3 pos = axle.leftWheel.transform.localPosition;
+
+            axle.leftWheel.forceAppPointDistance = wheelsApplyForceHeight;
+            axle.rightWheel.forceAppPointDistance = wheelsApplyForceHeight;
+        }
     }
 }
