@@ -737,16 +737,19 @@ MonoBehaviour:
     rightWheel: {fileID: 6185099878349216029}
     motor: 0
     steering: 1
+    canBreak: 1
   - leftWheel: {fileID: 6185099878387330180}
     rightWheel: {fileID: 6185099877961030302}
     motor: 1
     steering: 0
+    canBreak: 0
   visualBackWheel: {fileID: 7907707677395143115}
   visualFrontWheel: {fileID: 7907707677500401609}
   poleFront: {fileID: 7907707676172861559}
   animator: {fileID: 7907707677975858905}
   maxMotorTorque: 200
   maxSteeringAngle: 30
+  maxBreakTorque: 500
   animationSpeedMultiplier: 0.25
   wheelWidth: 0.15
   centerOfMassOffset: {x: 0, y: 0, z: 0}

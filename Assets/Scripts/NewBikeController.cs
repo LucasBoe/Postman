@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using NaughtyAttributes;
 using UnityEngine.Animations.Rigging;
+using System;
 
 [System.Serializable]
 public class AxleInfo
@@ -11,6 +12,7 @@ public class AxleInfo
     public WheelCollider rightWheel;
     public bool motor;
     public bool steering;
+    public bool canBreak;
 }
 
 public class NewBikeController : MonoBehaviour
@@ -24,6 +26,7 @@ public class NewBikeController : MonoBehaviour
     [Header("Settings")]
     [SerializeField] float maxMotorTorque;
     [SerializeField] float maxSteeringAngle;
+    [SerializeField] float maxBreakTorque;
     [SerializeField] float animationSpeedMultiplier = 0.25f;
 
     [OnValueChanged("OnStabilityChanged")]
@@ -37,6 +40,8 @@ public class NewBikeController : MonoBehaviour
     [SerializeField] float wheelsApplyForceHeight = 0.45f;
 
     new Rigidbody rigidbody;
+
+    private bool inCorrection;
 
     private void Start()
     {
@@ -53,6 +58,45 @@ public class NewBikeController : MonoBehaviour
 
         animator.speed = animationSpeedMultiplier * rigidbody.velocity.WithYZero().magnitude;
 
+        UpdateRotationFromBody();
+
+        CheckForCorrection();
+    }
+
+    private void CheckForCorrection()
+    {
+        if (Input.GetButtonDown("Upright") && !inCorrection)
+        {
+            StartCoroutine(CorrectionRoutine());
+        }
+    }
+
+    private IEnumerator CorrectionRoutine()
+    {
+        inCorrection = true;
+        Vector3 prevOffset = centerOfMassOffset;
+        float prevWidth = wheelWidth;
+
+        centerOfMassOffset = new Vector3(0, -2, 0);
+        wheelWidth = 0.5f;
+        OnStabilityChanged();
+        OnCenterOfMassOffsetChanged();
+
+        yield return new WaitForSeconds(1f);
+
+        centerOfMassOffset = prevOffset;
+        wheelWidth = prevWidth;
+        OnStabilityChanged();
+        OnCenterOfMassOffsetChanged();
+
+        inCorrection = false;
+    }
+
+    private void UpdateRotationFromBody()
+    {
+        float sideSpeed = Vector3.Dot(rigidbody.velocity, transform.right);
+        float forwardSpeed = Vector3.Dot(rigidbody.velocity, transform.forward);
+        //todo bend forward and to sides
     }
 
     public void ApplyAxleToVisuals(AxleInfo axle, Transform visual)
@@ -67,8 +111,10 @@ public class NewBikeController : MonoBehaviour
 
     private void UpdateWheels()
     {
+
         float motor = maxMotorTorque * Input.GetAxis("Vertical");
         float steering = maxSteeringAngle * Input.GetAxis("Horizontal");
+        float breaks = maxBreakTorque * Input.GetAxis("Breaks");
 
         foreach (AxleInfo axleInfo in axleInfos)
         {
@@ -81,6 +127,11 @@ public class NewBikeController : MonoBehaviour
             {
                 axleInfo.leftWheel.motorTorque = motor;
                 axleInfo.rightWheel.motorTorque = motor;
+            }
+            if (axleInfo.canBreak)
+            {
+                axleInfo.leftWheel.brakeTorque = breaks;
+                axleInfo.rightWheel.brakeTorque = breaks;
             }
         }
     }
@@ -115,4 +166,26 @@ public class NewBikeController : MonoBehaviour
             axle.rightWheel.forceAppPointDistance = wheelsApplyForceHeight;
         }
     }
+
+    private Vector3 CalculateSideVelocity()
+    {
+       return transform.right * Vector3.Dot(transform.right, rigidbody.velocity);
+    }
+
+    private void OnDrawGizmos()
+    {
+        if (rigidbody == null)
+            rigidbody = GetComponent<Rigidbody>();
+
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawWireCube(transform.position + transform.rotation * rigidbody.centerOfMass, Vector3.one * 0.1f);
+
+        Gizmos.color = Color.blue;
+        Gizmos.DrawLine(transform.position, transform.position + transform.forward);
+        Gizmos.color = Color.red;
+        Gizmos.DrawLine(transform.position, transform.position + rigidbody.velocity);
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawLine(transform.position, transform.position + CalculateSideVelocity());
+    }
+
 }
