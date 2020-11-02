@@ -76347,7 +76347,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   state: 0
   newspaperPrefab: {fileID: 5333627834325424548, guid: 3e5c4eb48c764ce4cb6cfc1d850d9cca, type: 3}
-  throwForceMultiplier: 500
+  throwForceMultiplier: 600
 --- !u!1 &2039543315
 GameObject:
   m_ObjectHideFlags: 0

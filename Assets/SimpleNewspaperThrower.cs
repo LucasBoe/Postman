@@ -36,7 +36,7 @@ public class SimpleNewspaperThrower : MonoBehaviour
                 } else if (Input.GetMouseButtonDown(0))
                 {
                     Rigidbody rigidbody = Instantiate(newspaperPrefab, transform.position + (transform.right + transform.up) * 0.5f, Quaternion.identity).GetComponent<Rigidbody>();
-                    rigidbody.AddForce(CalculateThrowTarget().normalized * throwForceMultiplier);
+                    rigidbody.AddForce((CalculateThrowTarget() - transform.position).normalized * throwForceMultiplier);
                 }
                 break;
         }
@@ -48,7 +48,7 @@ public class SimpleNewspaperThrower : MonoBehaviour
         float yMouse = RemapMouse(Input.mousePosition.y, Screen.height);
 
         Vector3 targetBase = transform.position + transform.right * 8 * xMouse + transform.forward * 4;
-        Vector3 targetOffset = transform.up * yMouse;
+        Vector3 targetOffset = transform.up * 2 +  transform.up * yMouse;
 
         return targetBase + targetOffset;
     }
