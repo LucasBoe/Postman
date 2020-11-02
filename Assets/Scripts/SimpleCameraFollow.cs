@@ -25,7 +25,7 @@ public class SimpleCameraFollow : MonoBehaviour
     void FixedUpdate()
     {
         //Define a target position
-        Vector3 targetCameraPosition = target.position - target.forward * 3 + Vector3.up * 1.5f;
+        Vector3 targetCameraPosition = target.position - target.forward * 3 + Vector3.up;
 
         //Smoothly move the camera towards that target position
         transform.position = Vector3.Lerp(positionBefore, targetCameraPosition, positionSmoothAmount);

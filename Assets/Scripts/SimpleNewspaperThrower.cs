@@ -34,7 +34,7 @@ public class SimpleNewspaperThrower : MonoBehaviour
             case newspaperThrowState.AIM:
                 Vector3 throwDirection =(CalculateThrowTarget() - transform.position).normalized;
 
-                throwVisulization.transform.LookAt(transform.position + throwDirection);
+                throwVisulization.transform.LookAt(transform.position + Vector3.up + throwDirection);
 
                 if (Input.GetMouseButtonUp(1))
                 {
@@ -53,7 +53,7 @@ public class SimpleNewspaperThrower : MonoBehaviour
         if (newspapersLeft <= 0)
             return;
 
-        Rigidbody rigidbody = Instantiate(newspaperPrefab, transform.position + throwDirection, Quaternion.LookRotation(throwDirection)).GetComponent<Rigidbody>();
+        Rigidbody rigidbody = Instantiate(newspaperPrefab, transform.position + Vector3.up * 0.8f + (throwDirection)* 0.66f, Quaternion.LookRotation(throwDirection)).GetComponent<Rigidbody>();
         rigidbody.AddForce(throwDirection * throwForceMultiplier);
         newspapersLeft -= 1;
     }
@@ -63,8 +63,8 @@ public class SimpleNewspaperThrower : MonoBehaviour
         float xMouse = RemapMouse(Input.mousePosition.x, Screen.width);
         float yMouse = RemapMouse(Input.mousePosition.y, Screen.height);
 
-        Vector3 targetBase = transform.position + transform.right * 8 * xMouse + transform.forward * 4;
-        Vector3 targetOffset = transform.up * 2 +  transform.up * yMouse;
+        Vector3 targetBase = (transform.position + transform.up) + transform.right * 8 * xMouse + transform.forward * 4;
+        Vector3 targetOffset = transform.up +  transform.up * yMouse;
 
         return targetBase + targetOffset;
     }
@@ -76,6 +76,6 @@ public class SimpleNewspaperThrower : MonoBehaviour
 
     private void OnDrawGizmos()
     {
-        Gizmos.DrawLine(transform.position, CalculateThrowTarget());
+        Gizmos.DrawLine((transform.position), CalculateThrowTarget());
     }
 }
