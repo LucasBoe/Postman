@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 91506406}
-  m_IndirectSpecularColor: {r: 0.18154661, g: 0.2271898, b: 0.3074084, a: 1}
+  m_IndirectSpecularColor: {r: 0.18154635, g: 0.22718929, b: 0.3074078, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -69564,6 +69564,10 @@ PrefabInstance:
       propertyPath: CameraLookAtForwardOffsetMultiplier
       value: 4
       objectReference: {fileID: 0}
+    - target: {fileID: 6913303044175363709, guid: 002fbd8f91d83e54680393a6c73472a3, type: 3}
+      propertyPath: newspaperThrower
+      value: 
+      objectReference: {fileID: 2037534780}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 002fbd8f91d83e54680393a6c73472a3, type: 3}
 --- !u!1001 &1889831522
@@ -76324,6 +76328,26 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 4098545655392818, guid: 8c3c37f818a12421c870b08339e74c2a, type: 3}
   m_PrefabInstance: {fileID: 2036568818}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &2037534779 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6185099879248055868, guid: 5c81ae89927cf844b8992d33dfa97e2d, type: 3}
+  m_PrefabInstance: {fileID: 6185099878682164837}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &2037534780
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2037534779}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b9a389235b5bdca41b4029754a42396b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  state: 0
+  newspaperPrefab: {fileID: 5333627834325424548, guid: 3e5c4eb48c764ce4cb6cfc1d850d9cca, type: 3}
+  throwForceMultiplier: 500
 --- !u!1 &2039543315
 GameObject:
   m_ObjectHideFlags: 0

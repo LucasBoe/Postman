@@ -12,6 +12,7 @@ public class SimpleCameraFollow : MonoBehaviour
     public float CameraLookAtUpOffsetMultiplier = 1.5f;
     public float CameraLookAtForwardOffsetMultiplier = 2;
 
+    [SerializeField] SimpleNewspaperThrower newspaperThrower;
 
     private Vector3 positionBefore;
     private Vector3 forwardBefore;
@@ -26,6 +27,11 @@ public class SimpleCameraFollow : MonoBehaviour
 
         //Define a terget look at
         Vector3 targetCameraLookAt = target.position + Vector3.up * CameraLookAtUpOffsetMultiplier + target.forward * CameraLookAtForwardOffsetMultiplier;
+        
+        if (newspaperThrower != null && newspaperThrower.state == newspaperThrowState.AIM)
+        {
+            targetCameraLookAt = Vector3.Lerp(newspaperThrower.CalculateThrowTarget(), targetCameraLookAt, 0.5f);
+        }
 
         //Lerp to the new calculated vector
         transform.forward = Vector3.Lerp(forwardBefore, (targetCameraLookAt - transform.position), rotationSmoothAmount);
