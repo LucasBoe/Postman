@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Animations.Rigging;
 
 public enum newspaperThrowState
 {
@@ -18,16 +19,24 @@ public class SimpleNewspaperThrower : MonoBehaviour
     [SerializeField] GameObject newspaperPrefab;
     [SerializeField] float throwForceMultiplier = 100;
     [SerializeField] GameObject throwVisulization;
+    [SerializeField] Rig handThrowRig;
+    [SerializeField] Transform throwTarget;
+    [SerializeField] GameObject newspaperInHand;
+
+    float handBlendAmount = 0;
 
     private void Update()
     {
         switch (state)
         {
             case newspaperThrowState.NONE:
-                if (Input.GetMouseButtonDown(1))
+                handBlendAmount = Mathf.Clamp(handBlendAmount - Time.deltaTime * 3,0,1);
+
+                if (Input.GetMouseButton(1))
                 {
                     state = newspaperThrowState.AIM;
                     throwVisulization.SetActive(true);
+                    newspaperInHand.SetActive(true);
                 }
                 break;
 
@@ -36,26 +45,56 @@ public class SimpleNewspaperThrower : MonoBehaviour
 
                 throwVisulization.transform.LookAt(transform.position + Vector3.up + throwDirection);
 
+                throwTarget.position = transform.position + (throwDirection/1.5f);
+                throwTarget.rotation = Quaternion.LookRotation(Vector3.up * 0.5f, throwDirection);
+                handBlendAmount = -0.001f;
+                handThrowRig.weight = 0.66f;
+
                 if (Input.GetMouseButtonUp(1))
                 {
                     state = newspaperThrowState.NONE;
                     throwVisulization.SetActive(false);
+                    newspaperInHand.SetActive(false);
                 } else if (Input.GetMouseButtonDown(0))
                 {
-                    Throw(throwDirection);
+                    StartCoroutine(Throw(throwDirection));
                 }
                 break;
         }
+
+        if (handBlendAmount >= 0)
+            handThrowRig.weight = handBlendAmount;
     }
 
-    public void Throw(Vector3 throwDirection)
+    IEnumerator Throw(Vector3 throwDirection)
     {
-        if (newspapersLeft <= 0)
-            return;
+        state = newspaperThrowState.THROW;
+        throwVisulization.SetActive(false);
+        throwTarget.position = transform.position + (transform.up + throwDirection);
 
-        Rigidbody rigidbody = Instantiate(newspaperPrefab, transform.position + Vector3.up * 0.8f + (throwDirection)* 0.66f, Quaternion.LookRotation(throwDirection)).GetComponent<Rigidbody>();
-        rigidbody.AddForce(throwDirection * throwForceMultiplier);
-        newspapersLeft -= 1;
+        for (float i = 0.25f; i < 0.66; i += 3 * Time.deltaTime)
+        {
+            handBlendAmount += 3 * Time.deltaTime;
+            yield return null;
+        }
+
+        if (newspapersLeft > 0)
+        {
+            Rigidbody rigidbody = Instantiate(newspaperPrefab, transform.position + Vector3.up * 0.8f + (throwDirection) * 0.66f, Quaternion.LookRotation(throwDirection)).GetComponent<Rigidbody>();
+            rigidbody.AddForce(throwDirection * throwForceMultiplier);
+            newspapersLeft -= 1;
+            newspaperInHand.SetActive(false);
+        }
+
+        for (float i = 0; i < 1; i += 3 * Time.deltaTime)
+        {
+            handBlendAmount += 3 * Time.deltaTime;
+            yield return null;
+        }
+
+        state = newspaperThrowState.NONE;
+
+        yield return null;
     }
 
     public Vector3 CalculateThrowTarget()

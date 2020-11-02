@@ -33,7 +33,7 @@ public class SimpleCameraFollow : MonoBehaviour
         //Define a terget look at
         Vector3 targetCameraLookAt = target.position + Vector3.up * CameraLookAtUpOffsetMultiplier + target.forward * CameraLookAtForwardOffsetMultiplier;
         
-        if (newspaperThrower != null && newspaperThrower.state == newspaperThrowState.AIM)
+        if (newspaperThrower != null && newspaperThrower.state != newspaperThrowState.NONE)
         {
             targetCameraLookAt = Vector3.Lerp(newspaperThrower.CalculateThrowTarget(), targetCameraLookAt, 0.5f);
         }
