@@ -12,11 +12,12 @@ public enum newspaperThrowState
 
 public class SimpleNewspaperThrower : MonoBehaviour
 {
-    int newspapersLeft;
+    public int newspapersLeft;
     public newspaperThrowState state;
 
     [SerializeField] GameObject newspaperPrefab;
     [SerializeField] float throwForceMultiplier = 100;
+    [SerializeField] GameObject throwVisulization;
 
     private void Update()
     {
@@ -25,21 +26,36 @@ public class SimpleNewspaperThrower : MonoBehaviour
             case newspaperThrowState.NONE:
                 if (Input.GetMouseButtonDown(1))
                 {
-                    state = newspaperThrowState.AIM; 
+                    state = newspaperThrowState.AIM;
+                    throwVisulization.SetActive(true);
                 }
                 break;
 
             case newspaperThrowState.AIM:
+                Vector3 throwDirection =(CalculateThrowTarget() - transform.position).normalized;
+
+                throwVisulization.transform.LookAt(transform.position + throwDirection);
+
                 if (Input.GetMouseButtonUp(1))
                 {
                     state = newspaperThrowState.NONE;
+                    throwVisulization.SetActive(false);
                 } else if (Input.GetMouseButtonDown(0))
                 {
-                    Rigidbody rigidbody = Instantiate(newspaperPrefab, transform.position + (transform.right + transform.up) * 0.5f, Quaternion.identity).GetComponent<Rigidbody>();
-                    rigidbody.AddForce((CalculateThrowTarget() - transform.position).normalized * throwForceMultiplier);
+                    Throw(throwDirection);
                 }
                 break;
         }
+    }
+
+    public void Throw(Vector3 throwDirection)
+    {
+        if (newspapersLeft <= 0)
+            return;
+
+        Rigidbody rigidbody = Instantiate(newspaperPrefab, transform.position + throwDirection, Quaternion.LookRotation(throwDirection)).GetComponent<Rigidbody>();
+        rigidbody.AddForce(throwDirection * throwForceMultiplier);
+        newspapersLeft -= 1;
     }
 
     public Vector3 CalculateThrowTarget()
