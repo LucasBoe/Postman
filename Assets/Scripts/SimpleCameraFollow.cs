@@ -17,6 +17,11 @@ public class SimpleCameraFollow : MonoBehaviour
     private Vector3 positionBefore;
     private Vector3 forwardBefore;
 
+    private void Start()
+    {
+        positionBefore = transform.position;
+    }
+
     void FixedUpdate()
     {
         //Define a target position
