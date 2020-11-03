@@ -23,6 +23,11 @@ public class SimpleNewspaperThrower : MonoBehaviour
     [SerializeField] Transform throwTarget;
     [SerializeField] GameObject newspaperInHand;
 
+    [Header("Line Visualization")]
+    [SerializeField] LineRenderer lineRenderer;
+    [SerializeField] float maxTime;
+    [SerializeField] int sampleAmount;
+
     float handBlendAmount = 0;
 
     private void Update()
@@ -30,7 +35,7 @@ public class SimpleNewspaperThrower : MonoBehaviour
         switch (state)
         {
             case newspaperThrowState.NONE:
-                handBlendAmount = Mathf.Clamp(handBlendAmount - Time.deltaTime * 3,0,1);
+                handBlendAmount = Mathf.Clamp(handBlendAmount - Time.deltaTime * 3, 0, 1);
 
                 if (Input.GetMouseButton(1))
                 {
@@ -41,11 +46,11 @@ public class SimpleNewspaperThrower : MonoBehaviour
                 break;
 
             case newspaperThrowState.AIM:
-                Vector3 throwDirection =(CalculateThrowTarget() - transform.position).normalized;
+                Vector3 throwDirection = GetThrowDirection();
 
                 throwVisulization.transform.LookAt(transform.position + Vector3.up + throwDirection);
 
-                throwTarget.position = transform.position + (throwDirection/1.5f);
+                throwTarget.position = transform.position + (throwDirection / 1.5f);
                 throwTarget.rotation = Quaternion.LookRotation(Vector3.up * 0.5f, throwDirection);
                 handBlendAmount = -0.001f;
                 handThrowRig.weight = 0.66f;
@@ -55,7 +60,8 @@ public class SimpleNewspaperThrower : MonoBehaviour
                     state = newspaperThrowState.NONE;
                     throwVisulization.SetActive(false);
                     newspaperInHand.SetActive(false);
-                } else if (Input.GetMouseButtonDown(0))
+                }
+                else if (Input.GetMouseButtonDown(0))
                 {
                     StartCoroutine(Throw(throwDirection));
                 }
@@ -64,6 +70,8 @@ public class SimpleNewspaperThrower : MonoBehaviour
 
         if (handBlendAmount >= 0)
             handThrowRig.weight = handBlendAmount;
+
+        UpdateThrowVisuals();
     }
 
     IEnumerator Throw(Vector3 throwDirection)
@@ -80,8 +88,8 @@ public class SimpleNewspaperThrower : MonoBehaviour
 
         if (newspapersLeft > 0)
         {
-            Rigidbody rigidbody = Instantiate(newspaperPrefab, transform.position + Vector3.up * 0.8f + (throwDirection) * 0.66f, Quaternion.LookRotation(throwDirection)).GetComponent<Rigidbody>();
-            rigidbody.AddForce(throwDirection * throwForceMultiplier);
+            Rigidbody rigidbody = Instantiate(newspaperPrefab, GetPaperSpawnPosition(), Quaternion.LookRotation(throwDirection)).GetComponent<Rigidbody>();
+            rigidbody.AddForce(throwDirection * throwForceMultiplier, ForceMode.VelocityChange);
             newspapersLeft -= 1;
             newspaperInHand.SetActive(false);
         }
@@ -97,13 +105,53 @@ public class SimpleNewspaperThrower : MonoBehaviour
         yield return null;
     }
 
+    private void UpdateThrowVisuals()
+    {
+        if (lineRenderer == null)
+            return;
+
+        if(state == newspaperThrowState.AIM)
+        {
+            lineRenderer.positionCount = sampleAmount;
+            Vector3[] locations = new Vector3[sampleAmount];
+
+            float singleStep = maxTime / sampleAmount;
+
+            for (int i = 0; i < sampleAmount; i++)
+            {
+                locations[i] = CalculateThrowPointAt(singleStep * i, GetThrowDirection() * throwForceMultiplier, GetPaperSpawnPosition());
+            }
+            lineRenderer.SetPositions(locations);
+        }
+        else
+        {
+            lineRenderer.positionCount = 0;
+        }
+    }
+
+    private Vector3 GetThrowDirection()
+    {
+        return (CalculateThrowTarget() - transform.position).normalized;
+    }
+
+    private Vector3 GetPaperSpawnPosition()
+    {
+        return transform.position + Vector3.up * 0.8f + (GetThrowDirection()) * 0.66f;
+    }
+
+    public Vector3 CalculateThrowPointAt(float t, Vector3 startVelocity, Vector3 startPosition)
+    {
+        Vector3 output = 0.5f * Physics.gravity * t * t + startVelocity * t + startPosition;
+        return output;
+    }
+
     public Vector3 CalculateThrowTarget()
     {
         float xMouse = RemapMouse(Input.mousePosition.x, Screen.width);
         float yMouse = RemapMouse(Input.mousePosition.y, Screen.height);
 
         Vector3 targetBase = (transform.position + transform.up) + transform.right * 8 * xMouse + transform.forward * 4;
-        Vector3 targetOffset = transform.up +  transform.up * yMouse;
+        Vector3 targetOffset = transform.up + transform.up * yMouse;
 
         return targetBase + targetOffset;
     }
