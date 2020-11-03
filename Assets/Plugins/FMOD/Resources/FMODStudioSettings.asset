@@ -113,7 +113,7 @@ MonoBehaviour:
     CallbackHandler:
       Value: {fileID: 0}
       HasValue: 0
-  outputType: 
+  outputType: AUTODETECT
 --- !u!114 &-112949318479780079
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -184,10 +184,10 @@ MonoBehaviour:
   m_Name: FMODStudioSettings
   m_EditorClassIdentifier: 
   SwitchSettingsMigration: 1
-  HasSourceProject: 1
-  HasPlatforms: 1
+  HasSourceProject: 0
+  HasPlatforms: 0
   sourceProjectPath: C:/Users/lucxm/Documents/FMOD Studio/Learning1/Learning1.fspro
-  sourceBankPath: C:\Users\lucxm\Documents\FMOD Studio\Learning1\Build
+  sourceBankPath: Assets/FMODBanks/Banks
   SourceBankPathUnformatted: 
   AutomaticEventLoading: 1
   BankLoadType: 0
