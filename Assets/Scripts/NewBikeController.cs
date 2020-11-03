@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using NaughtyAttributes;
 using UnityEngine.Animations.Rigging;
 using System;
+using FMOD.Studio;
 
 [System.Serializable]
 public class AxleInfo
@@ -39,13 +40,29 @@ public class NewBikeController : MonoBehaviour
     [OnValueChanged("OnWheelsApplyForceHeightChanged")]
     [SerializeField] float wheelsApplyForceHeight = 0.45f;
 
+    [Header("Audio")]
+    [FMODUnity.EventRef]
+    [SerializeField] string ringEvent, peddleEvent;
+    [SerializeField] AnimationCurve speedToPeddleVolume;
     new Rigidbody rigidbody;
 
     private bool inCorrection;
+    EventInstance peddleSoundInstance;
 
     private void Start()
     {
         rigidbody = GetComponent<Rigidbody>();
+        peddleSoundInstance = FMODUnity.RuntimeManager.CreateInstance(peddleEvent);
+        FMODUnity.RuntimeManager.AttachInstanceToGameObject(peddleSoundInstance, transform, rigidbody);
+        peddleSoundInstance.start();
+    }
+
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            FMODUnity.RuntimeManager.PlayOneShot(ringEvent, transform.position);
+        }
     }
 
     public void FixedUpdate()
@@ -56,11 +73,14 @@ public class NewBikeController : MonoBehaviour
         ApplyAxleToVisuals(axleInfos[1], visualBackWheel);
         poleFront.localRotation = Quaternion.AngleAxis(axleInfos[0].leftWheel.steerAngle, Vector3.up);
 
-        animator.speed = animationSpeedMultiplier * rigidbody.velocity.WithYZero().magnitude;
+        float speed = rigidbody.velocity.WithYZero().magnitude;
+        animator.speed = animationSpeedMultiplier * speed;
+        peddleSoundInstance.setParameterByName("PeddleSpeed", speedToPeddleVolume.Evaluate(speed));
 
         UpdateRotationFromBody();
 
         CheckForCorrection();
+
     }
 
     private void CheckForCorrection()

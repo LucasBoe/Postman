@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Animations.Rigging;
@@ -18,7 +19,6 @@ public class SimpleNewspaperThrower : MonoBehaviour
 
     [SerializeField] GameObject newspaperPrefab;
     [SerializeField] float throwForceMultiplier = 100;
-    [SerializeField] GameObject throwVisulization;
     [SerializeField] Rig handThrowRig;
     [SerializeField] Transform throwTarget;
     [SerializeField] GameObject newspaperInHand;
@@ -29,41 +29,38 @@ public class SimpleNewspaperThrower : MonoBehaviour
     [SerializeField] int sampleAmount;
 
     float handBlendAmount = 0;
-
+    float throwForcePercent = 0;
     private void Update()
     {
         switch (state)
         {
             case newspaperThrowState.NONE:
                 handBlendAmount = Mathf.Clamp(handBlendAmount - Time.deltaTime * 3, 0, 1);
-
+                throwForcePercent = 0;
                 if (Input.GetMouseButton(1))
                 {
                     state = newspaperThrowState.AIM;
-                    throwVisulization.SetActive(true);
                     newspaperInHand.SetActive(true);
                 }
                 break;
 
             case newspaperThrowState.AIM:
-                Vector3 throwDirection = GetThrowDirection();
-
-                throwVisulization.transform.LookAt(transform.position + Vector3.up + throwDirection);
+                Vector3 throwDirection = GetThrowVelocity().normalized;
 
                 throwTarget.position = transform.position + (throwDirection / 1.5f);
                 throwTarget.rotation = Quaternion.LookRotation(Vector3.up * 0.5f, throwDirection);
                 handBlendAmount = -0.001f;
                 handThrowRig.weight = 0.66f;
+                throwForcePercent = Mathf.Clamp01(throwForcePercent + Time.deltaTime);
 
                 if (Input.GetMouseButtonUp(1))
                 {
                     state = newspaperThrowState.NONE;
-                    throwVisulization.SetActive(false);
                     newspaperInHand.SetActive(false);
                 }
                 else if (Input.GetMouseButtonDown(0))
                 {
-                    StartCoroutine(Throw(throwDirection));
+                    StartCoroutine(Throw());
                 }
                 break;
         }
@@ -74,10 +71,10 @@ public class SimpleNewspaperThrower : MonoBehaviour
         UpdateThrowVisuals();
     }
 
-    IEnumerator Throw(Vector3 throwDirection)
+    IEnumerator Throw()
     {
+        var throwDirection = GetThrowVelocity().normalized;
         state = newspaperThrowState.THROW;
-        throwVisulization.SetActive(false);
         throwTarget.position = transform.position + (transform.up + throwDirection);
 
         for (float i = 0.25f; i < 0.66; i += 3 * Time.deltaTime)
@@ -89,20 +86,17 @@ public class SimpleNewspaperThrower : MonoBehaviour
         if (newspapersLeft > 0)
         {
             Rigidbody rigidbody = Instantiate(newspaperPrefab, GetPaperSpawnPosition(), Quaternion.LookRotation(throwDirection)).GetComponent<Rigidbody>();
-            rigidbody.AddForce(throwDirection * throwForceMultiplier, ForceMode.VelocityChange);
+            rigidbody.AddForce(GetThrowVelocity(), ForceMode.VelocityChange);
             newspapersLeft -= 1;
             newspaperInHand.SetActive(false);
-        }
 
-        for (float i = 0; i < 1; i += 3 * Time.deltaTime)
-        {
-            handBlendAmount += 3 * Time.deltaTime;
-            yield return null;
+            for (float i = 0; i < 1; i += 3 * Time.deltaTime)
+            {
+                handBlendAmount += 3 * Time.deltaTime;
+                yield return null;
+            }
         }
-
         state = newspaperThrowState.NONE;
-
-        yield return null;
     }
 
     private void UpdateThrowVisuals()
@@ -119,9 +113,13 @@ public class SimpleNewspaperThrower : MonoBehaviour
 
             for (int i = 0; i < sampleAmount; i++)
             {
-                locations[i] = CalculateThrowPointAt(singleStep * i, GetThrowDirection() * throwForceMultiplier, GetPaperSpawnPosition());
+                locations[i] = CalculateThrowPointAt(singleStep * i, GetThrowVelocity(), GetPaperSpawnPosition());
             }
             lineRenderer.SetPositions(locations);
+
+            Gradient gradient = lineRenderer.colorGradient;
+            gradient.alphaKeys = new GradientAlphaKey[2] { new GradientAlphaKey(throwForcePercent, 0), new GradientAlphaKey(0, 1) };
+            lineRenderer.colorGradient = gradient;
         }
         else
         {
@@ -129,14 +127,14 @@ public class SimpleNewspaperThrower : MonoBehaviour
         }
     }
 
-    private Vector3 GetThrowDirection()
+    private Vector3 GetThrowVelocity()
     {
-        return (CalculateThrowTarget() - transform.position).normalized;
+        return (CalculateThrowTarget() - transform.position).normalized * throwForceMultiplier * throwForcePercent;
     }
 
     private Vector3 GetPaperSpawnPosition()
     {
-        return transform.position + Vector3.up * 0.8f + (GetThrowDirection()) * 0.66f;
+        return transform.position + Vector3.up * 0.8f + (GetThrowVelocity().normalized) * 0.66f;
     }
 
     public Vector3 CalculateThrowPointAt(float t, Vector3 startVelocity, Vector3 startPosition)
